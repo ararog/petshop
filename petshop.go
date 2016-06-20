@@ -1,4 +1,4 @@
-package petshop
+package main
 
 import (
   "github.com/ararog/petshop/resources"
@@ -26,7 +26,6 @@ func GetServerEngine(environment string) *gin.Engine {
   }
 
   db.AutoMigrate(&models.User{})
-  db.Create(&models.User{Name: "Rogerio Araujo", Email: "rogerio.araujo@gmail.com", Password: ""})
 
   userResource := &resources.UserResource{DB: db}
 
