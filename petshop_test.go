@@ -15,9 +15,9 @@ import (
 
 func TestMain(m *testing.M) {
 	environment := os.Getenv("PETSHOP_ENV")
-	if environment == nil {
+	if environment == "" {
 		os.Setenv("PETSHOP_ENV", "test")
-	}	
+	}
 
 	config := application.LoadConfig()
 
