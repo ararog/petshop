@@ -1,3 +1,9 @@
 language: go
 go:
   - tip
+env:
+  - PETSHOP_ENV=travis  
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database petshop_test;' -U postgres

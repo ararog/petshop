@@ -40,7 +40,7 @@ func TestLogin(t *testing.T) {
 			"username": "rogerio.araujo@gmail.com",
 		  "password": "123456",
     }).
-    Run(GetServerEngine("test", config), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+    Run(GetServerEngine(config), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
       assert.Equal(t, http.StatusOK, r.Code)
     })
 }
@@ -55,7 +55,7 @@ func TestMe(t *testing.T) {
 			"username": "rogerio.araujo@gmail.com",
 		  "password": "123456",
     }).
-    Run(GetServerEngine("test", config), func(res gofight.HTTPResponse, rq gofight.HTTPRequest) {
+    Run(GetServerEngine(config), func(res gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := []byte(res.Body.String())
 			token, _ := jsonparser.GetString(data, "token")
 
@@ -63,7 +63,7 @@ func TestMe(t *testing.T) {
 				SetHeader(gofight.H{
 			    "Authorization": fmt.Sprintf("Bearer %s", token),
 			  }).
-		    Run(GetServerEngine("test", config), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		    Run(GetServerEngine(config), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 		      assert.Equal(t, http.StatusOK, r.Code)
 		    })
     })

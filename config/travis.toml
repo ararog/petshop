@@ -1,0 +1,6 @@
+[server]
+port = 8080
+
+[database]
+type = "postgres"
+connection_string = "host=localhost user=postgres dbname=petshop_test sslmode=disable password="

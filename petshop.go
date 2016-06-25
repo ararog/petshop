@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 	"github.com/ararog/petshop/application"
+	"github.com/ararog/petshop/models"
 	"github.com/ararog/petshop/resources"
 	"github.com/ararog/petshop/services"
 	"github.com/appleboy/gin-jwt"
@@ -12,12 +13,14 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-func GetServerEngine(environment string, config application.Config) *gin.Engine {
+func GetServerEngine(config application.Config) *gin.Engine {
 
 	db, err := gorm.Open(config.DB.Type, config.DB.ConnectionString)
   if err != nil {
     panic("failed to connect database")
   }
+
+	db.AutoMigrate(&models.User{})
 
   userResource := &resources.UserResource{DB: db}
 
@@ -60,7 +63,7 @@ func GetServerEngine(environment string, config application.Config) *gin.Engine 
 }
 
 func main() {
-	environment := application.Environment()
 	config := application.LoadConfig()
-	GetServerEngine(environment, config).Run(fmt.Sprintf(":%d", config.Server.Port))
+	GetServerEngine(config).
+		Run(fmt.Sprintf(":%d", config.Server.Port))
 }

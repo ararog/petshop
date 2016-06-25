@@ -34,7 +34,7 @@ func LoadConfig() Config {
 
 	environment := Environment()
 	file := fmt.Sprintf("./config/%s.toml", environment)
-	if _, ioerr := os.Stat(file); os.IsExist(ioerr) {
+	if _, ioerr := os.Stat(file); ioerr == nil {
 		if _, err := toml.DecodeFile(file, &config); err != nil {
 			panic("failed to read configuration")
 		}
