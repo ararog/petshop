@@ -4,16 +4,21 @@ import (
 	"os"
 	"fmt"
 	"net/http"
+	"github.com/ararog/petshop/application"
+  "github.com/ararog/petshop/models"
 	"github.com/appleboy/gofight"
 	"github.com/stretchr/testify/assert"
 	"github.com/buger/jsonparser"
 	"github.com/jinzhu/gorm"
-  "github.com/ararog/petshop/models"
  	"testing"
 )
 
 func TestMain(m *testing.M) {
-	db, err := gorm.Open("sqlite3", "test.db")
+	os.Setenv("PETSHOP_ENV", "test")
+
+	config := application.LoadConfig()
+
+	db, err := gorm.Open(config.DB.Type, config.DB.ConnectionString)
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -28,12 +33,14 @@ func TestMain(m *testing.M) {
 func TestLogin(t *testing.T) {
 	r := gofight.New()
 
+	config := application.LoadConfig()
+
   r.POST("/api/v1/auth/signin").
     SetJSON(gofight.D{
 			"username": "rogerio.araujo@gmail.com",
 		  "password": "123456",
     }).
-    Run(GetServerEngine("test"), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+    Run(GetServerEngine("test", config), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
       assert.Equal(t, http.StatusOK, r.Code)
     })
 }
@@ -41,12 +48,14 @@ func TestLogin(t *testing.T) {
 func TestMe(t *testing.T) {
 	r := gofight.New()
 
+	config := application.LoadConfig()
+
 	r.POST("/api/v1/auth/signin").
     SetJSON(gofight.D{
 			"username": "rogerio.araujo@gmail.com",
 		  "password": "123456",
     }).
-    Run(GetServerEngine("test"), func(res gofight.HTTPResponse, rq gofight.HTTPRequest) {
+    Run(GetServerEngine("test", config), func(res gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			data := []byte(res.Body.String())
 			token, _ := jsonparser.GetString(data, "token")
 
@@ -54,7 +63,7 @@ func TestMe(t *testing.T) {
 				SetHeader(gofight.H{
 			    "Authorization": fmt.Sprintf("Bearer %s", token),
 			  }).
-		    Run(GetServerEngine("test"), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		    Run(GetServerEngine("test", config), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 		      assert.Equal(t, http.StatusOK, r.Code)
 		    })
     })

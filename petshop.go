@@ -1,26 +1,23 @@
 package main
 
 import (
-  "github.com/ararog/petshop/resources"
-  "github.com/ararog/petshop/models"
-  "github.com/ararog/petshop/services"
-	"github.com/ararog/petshop/config"
-  "github.com/appleboy/gin-jwt"
-  "github.com/gin-gonic/gin"
-	"github.com/BurntSushi/toml"
-  "github.com/jinzhu/gorm"
-  _ "github.com/jinzhu/gorm/dialects/postgres"
-  "time"
+	"fmt"
+	"time"
+	"github.com/ararog/petshop/application"
+	"github.com/ararog/petshop/resources"
+	"github.com/ararog/petshop/services"
+	"github.com/appleboy/gin-jwt"
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-func GetServerEngine(environment string) *gin.Engine {
+func GetServerEngine(environment string, config application.Config) *gin.Engine {
 
-	db, err := gorm.Open("postgres", databaseName)
+	db, err := gorm.Open(config.DB.Type, config.DB.ConnectionString)
   if err != nil {
     panic("failed to connect database")
   }
-
-  db.AutoMigrate(&models.User{})
 
   userResource := &resources.UserResource{DB: db}
 
@@ -63,5 +60,7 @@ func GetServerEngine(environment string) *gin.Engine {
 }
 
 func main() {
-  GetServerEngine("production").Run(":8080")
+	environment := application.Environment()
+	config := application.LoadConfig()
+	GetServerEngine(environment, config).Run(fmt.Sprintf(":%d", config.Server.Port))
 }
